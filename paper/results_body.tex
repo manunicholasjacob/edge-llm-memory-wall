@@ -5,13 +5,19 @@ $\tokps = \mathrm{BW}_\text{eff}/\text{bytes-per-token}$, where bytes-per-token 
 model file size (every weight is read once per generated token). The measured points lie on the
 prediction: decode throughput scales inversely with model bytes, and the effective bandwidth is a
 large and nearly constant fraction of the platform's \SI{13.98}{GB/s} DRAM peak---\DECBWLO--\DECBWHI\%
-across models. A single number, model bytes, predicts decode speed with $R^2=\ROOFR$.
+across models. A model's byte count can shrink two ways---fewer parameters or fewer bits---and both
+land on the same line: fitting all \ROOFN\ measured configurations (three parameter sizes at
+Q4\_K\_M plus five quantizations of the 0.5\,B model) gives $R^2=\ROOFRALL$, and the size sweep
+alone gives $R^2=\ROOFR$. A single number, model bytes, predicts decode speed regardless of whether
+the bytes come from architecture or from quantization.
 
 \begin{figure}[t]\centering
 \includegraphics[width=\columnwidth]{figs/fig1_roofline.png}
-\caption{Decode is bandwidth-bound. Measured decode throughput (points) matches the roofline
-$\mathrm{BW}_\text{eff}/\text{model bytes}$ (dashed), sustaining \DECBWLO--\DECBWHI\% of the
-\SI{13.98}{GB/s} DRAM peak. Larger models are proportionally slower.}
+\caption{Decode is bandwidth-bound. Measured decode throughput matches the roofline
+$\mathrm{BW}_\text{eff}/\text{model bytes}$ (dashed) across \emph{both} the parameter-size sweep
+(circles) and the quantization sweep (diamonds), sustaining \DECBWLO--\DECBWHI\% of the
+\SI{13.98}{GB/s} DRAM peak ($R^2=\ROOFRALL$ over all \ROOFN\ points). Fewer bytes---from fewer
+params or fewer bits---means proportionally faster decode.}
 \label{fig:roofline}
 \end{figure}
 
@@ -33,9 +39,12 @@ phases occupy opposite ends of the roofline.
 Because decode is bandwidth-bound, reducing weight precision has a direct and predictable payoff:
 fewer bytes per token means proportionally faster decode, and simultaneously a smaller footprint
 that eases the capacity wall of \S\ref{sec:capacity}. Figure~\ref{fig:quant} traces
-Qwen2.5-0.5B from 2 to 8 bits: decode throughput \QUANTPARA. Quantization is thus doubly effective
-on a memory-constrained device---it is not a speed/quality knob alone but the primary lever on both
-throughput and memory.
+Qwen2.5-0.5B from 2 to 8 bits: decode throughput \QUANTPARA. Measured perplexity on an English
+corpus completes the trade-off: \PPLPARA{} so the frontier is genuinely three-dimensional
+(speed, size, quality), and on a bandwidth-bound edge device the speed and size gains from
+quantization are proportional and predictable while the quality cost is the model designer's to
+weigh. Quantization is thus doubly effective on a memory-constrained device---not a speed/quality
+knob alone but the primary lever on throughput and memory together.
 
 \begin{figure}[t]\centering
 \includegraphics[width=0.85\columnwidth]{figs/fig3_quant.png}
@@ -87,6 +96,14 @@ for a longer context, trading precision for reach.
 dotted lines mark where the estimated footprint exceeds the safe budget.}
 \label{fig:capacity}
 \end{figure}
+
+\textbf{Weights, not KV, bound capacity at these sizes.} One might expect quantizing the KV cache
+(to 8 bits) to buy substantial extra context by halving its footprint. We measured this and found
+the effect is marginal for 0.5--1.5\,B models on 2\,GB: at these sizes the resident \emph{weights}
+dominate the budget and the KV cache is secondary, so it is \emph{weight} quantization, not KV
+quantization, that is the primary lever on capacity. KV-cache quantization would matter more for
+larger models or much longer contexts, where KV grows to rival the weights---a regime the 2\,GB
+device cannot reach regardless.
 
 \section{An Energy-Optimal Configuration Policy}\label{sec:policy}
 The measurements compose into a deployable policy. For a throughput target (an interactive

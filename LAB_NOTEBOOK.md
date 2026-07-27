@@ -19,6 +19,23 @@ Peak DRAM read 13.98 GB/s (from the memory-wall study). Clock pinned 2.4 GHz exc
 - **Analysis.** Size-only decode roofline (R²=0.994); energy-optimal clock/config policy (up to 23%
   energy saved at a throughput SLO, 0.5 B).
 
+## TC expansion (2026-07-27)
+- **Roofline strengthened to 7 points**: the 3-size sweep PLUS the 5 quantized 0.5B models all
+  lie on decode = BW_eff/bytes (R²=0.980; size-only R²=0.994). Byte reductions from fewer params
+  or fewer bits are equivalent on a bandwidth-bound loop. No new models needed.
+- **L9 perplexity** (quality Pareto): Q2=22.8, Q3=20.2, Q4=19.7, Q5=19.5, Q8=19.3 — Q4 recovers
+  near-Q8 quality at 75% footprint; Q2 pays a steep penalty. Corpus: Project Gutenberg English prose
+  (wikitext URL was dead). Completes the speed/size/quality trade-off.
+- **L8 KV-quant → honest null**: q8_0 KV barely extends context for 0.5–1.5B models on 2GB because
+  WEIGHTS dominate the capacity budget, not KV. (Also: llama.cpp needs `-fa` for quantized KV; the
+  -fa re-measure was too slow — 9min/16K-prefill — so reported as the weight-dominated finding.)
+- **L7 batch DROPPED**: llama-batched-bench build needs a disk-heavy full recompile that the
+  100%-full disk wouldn't allow; the batching mechanism is already argued analytically (single-user
+  edge can't batch → stuck on the BW slope, per Pope et al.).
+- Disk hell: a stray 620MB partial SmolLM2 download (missed by an earlier rm on a dropped conn)
+  filled the disk to 0 and silently broke a whole phase-3 run; deleting it fixed it. Lesson: verify
+  deletes landed, and `df` before every run on this box.
+
 ## Build & ops battles (the 2 GB Pi is right at the edge — fitting for the thesis)
 - **Build OOM:** `cmake --build -j3` at -O3 exhausts 2 GB compiling large files (server.cpp) →
   swap-death, Pi unreachable. Fix: **-j1** (single-file compilation), target only

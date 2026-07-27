@@ -12,23 +12,32 @@ PEAK=13.98
 S=[]
 def P(x): S.append(x); print(x)
 
-def roofline_model(e1):
-    ms=list(e1["models"].keys())
-    bytes_=np.array([e1["models"][m]["file_mb"]*1e6 for m in ms])
-    # use PEAK decode throughput across thread counts = the true bandwidth ceiling
+def roofline_model(e1, e2=None):
+    # Roofline over ALL measured models: the 3-size sweep (peak decode across threads) PLUS the
+    # 5 quantized 0.5B models (decode at 4 threads). Byte reductions from fewer params or fewer
+    # bits are equivalent on a bandwidth-bound loop, so all lie on tg = BW_eff / bytes.
     def peak_tg(m):
         return max(r["tg_ts"] for r in e1["models"][m]["threads"].values() if r["tg_ts"])
-    tg=np.array([peak_tg(m) for m in ms])
-    # decode_ts = BW_eff / bytes  ->  tg = BW_eff * (1/bytes); fit slope through origin
+    pts=[]
+    for m in e1["models"]:
+        util=max(r["bw_util_pct"] for r in e1["models"][m]["threads"].values() if r["bw_util_pct"])
+        pts.append((e1["models"][m]["file_mb"]*1e6, peak_tg(m), util))
+    if e2:
+        size_names=set(e1["models"].keys())
+        for m in e2["models"]:
+            if m in size_names: continue
+            b=e2["models"][m]["file_mb"]*1e6; tgv=e2["models"][m]["tg_ts"]
+            pts.append((b, tgv, 100*(tgv*b/1e9)/PEAK))
+    bytes_=np.array([p[0] for p in pts]); tg=np.array([p[1] for p in pts])
     x=1.0/bytes_
-    BW=float(np.sum(x*tg)/np.sum(x*x))    # bytes/s
+    BW=float(np.sum(x*tg)/np.sum(x*x))
     pred=BW*x
     r2=1-np.sum((tg-pred)**2)/np.sum((tg-tg.mean())**2)
-    P(f"[roofline] BW_eff={BW/1e9:.2f} GB/s = {100*BW/1e9/PEAK:.0f}% of {PEAK} GB/s peak; "
+    util=[p[2] for p in pts]
+    P(f"[roofline] {len(pts)} models: BW_eff={BW/1e9:.2f} GB/s = {100*BW/1e9/PEAK:.0f}% of {PEAK} GB/s peak; "
       f"decode_ts = {BW/1e9:.2f}e9 / model_bytes ; R^2={r2:.3f}")
-    util=[max(r["bw_util_pct"] for r in e1["models"][m]["threads"].values() if r["bw_util_pct"]) for m in ms]
     P(f"[roofline] per-model peak BW utilization: {min(util):.0f}%..{max(util):.0f}%")
-    return {"BW_eff_GBs":BW/1e9,"r2":r2,"util_lo":min(util),"util_hi":max(util)}
+    return {"BW_eff_GBs":BW/1e9,"r2":r2,"util_lo":min(util),"util_hi":max(util),"n_points":len(pts)}
 
 def energy_policy(e5):
     """For a throughput SLO, pick the lowest-energy frequency that still meets it (from L5).
@@ -79,7 +88,7 @@ def quant_stats(e2):
 def main():
     e1=L("L1_roofline.json"); e2=L("L2_quant.json"); e5=L("L5_dvfs.json")
     out={}
-    if e1: out["roofline"]=roofline_model(e1)
+    if e1: out["roofline"]=roofline_model(e1, e2)
     if e2: quant_stats(e2)
     if e5: out["policy"]=energy_policy(e5)
     json.dump(out,open(os.path.join(RES,"analysis.json"),"w"),indent=2)

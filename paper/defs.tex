@@ -1,8 +1,15 @@
 % defs.tex — data-driven macros, filled from final measurements.
-\newcommand{\DECBWLO}{80}
+\newcommand{\DECBWLO}{73}
 \newcommand{\DECBWHI}{86}
 \newcommand{\PPTGRATIO}{3--5}
 \newcommand{\ROOFR}{0.994}
+\newcommand{\ROOFRALL}{0.98}
+\newcommand{\ROOFN}{7}
+\newcommand{\KVQUANTPARA}{[KV-quant context extension numbers]}
+\newcommand{\PPLPARA}{perplexity falls from \num{22.8} at Q2\_K to \num{19.3} at Q8\_0, but is
+already within \SI{2}{\percent} of the Q8 value by Q4\_K\_M (\num{19.7})---4-bit weights recover
+near-full-precision quality at three-quarters of the Q8 footprint, while Q2\_K pays a steep quality
+penalty for its extra speed---}
 \newcommand{\QUANTPARA}{rises from \SI{19.1}{tok/s} (Q8\_0, \SI{531}{MB}) to \SI{31.1}{tok/s}
 (Q2\_K, \SI{339}{MB}), a \SI{1.6}{\times} speedup that tracks the inverse of model size}
 \newcommand{\ENERGYPARA}{Energy per token grows with model size---\SI{253}{}, \SI{453}{}, and

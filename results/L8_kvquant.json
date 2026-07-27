@@ -1,0 +1,112 @@
+{
+  "models": {
+    "llama1b-q4km": {
+      "file_mb": 807.694464,
+      "kv": {
+        "f16": {
+          "max_ctx": 8192,
+          "curve": [
+            {
+              "ctx": 2048,
+              "pp_ts": 64.967585,
+              "min_avail_mb": 436,
+              "ok": true
+            },
+            {
+              "ctx": 4096,
+              "pp_ts": 56.468499,
+              "min_avail_mb": 446,
+              "ok": true
+            },
+            {
+              "ctx": 8192,
+              "pp_ts": 42.224668,
+              "min_avail_mb": 346,
+              "ok": true
+            },
+            {
+              "ctx": 16384,
+              "pp_ts": null,
+              "min_avail_mb": 59,
+              "ok": false
+            }
+          ]
+        },
+        "q8_0": {
+          "max_ctx": 4096,
+          "curve": [
+            {
+              "ctx": 2048,
+              "pp_ts": 49.094412,
+              "min_avail_mb": 536,
+              "ok": true
+            },
+            {
+              "ctx": 4096,
+              "pp_ts": 32.879284,
+              "min_avail_mb": 482,
+              "ok": true
+            },
+            {
+              "ctx": 8192,
+              "pp_ts": null,
+              "min_avail_mb": 411,
+              "ok": false
+            }
+          ]
+        }
+      }
+    },
+    "qwen1.5b-q4km": {
+      "file_mb": 986.048768,
+      "kv": {
+        "f16": {
+          "max_ctx": 4096,
+          "curve": [
+            {
+              "ctx": 2048,
+              "pp_ts": 51.118516,
+              "min_avail_mb": 352,
+              "ok": true
+            },
+            {
+              "ctx": 4096,
+              "pp_ts": 43.261331,
+              "min_avail_mb": 317,
+              "ok": true
+            },
+            {
+              "ctx": 8192,
+              "pp_ts": 33.851448,
+              "min_avail_mb": 188,
+              "ok": true
+            }
+          ]
+        },
+        "q8_0": {
+          "max_ctx": 4096,
+          "curve": [
+            {
+              "ctx": 2048,
+              "pp_ts": 39.583589,
+              "min_avail_mb": 421,
+              "ok": true
+            },
+            {
+              "ctx": 4096,
+              "pp_ts": 29.443776,
+              "min_avail_mb": 389,
+              "ok": true
+            },
+            {
+              "ctx": 8192,
+              "pp_ts": null,
+              "min_avail_mb": 327,
+              "ok": false
+            }
+          ]
+        }
+      }
+    }
+  }
+}
