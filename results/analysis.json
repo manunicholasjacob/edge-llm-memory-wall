@@ -1,0 +1,94 @@
+{
+  "roofline": {
+    "BW_eff_GBs": 11.343492007537735,
+    "r2": 0.9943811757666817,
+    "util_lo": 79.82943615935129,
+    "util_hi": 86.03363666820027
+  },
+  "policy": {
+    "qwen0.5b-q4km": {
+      "ts_max": 26.73717,
+      "e_maxclock_mJ": 249.73622342532744,
+      "rows": [
+        {
+          "slo_frac": 0.7,
+          "slo_tok_s": 18.716019,
+          "freq_mhz": 1500,
+          "energy_mJ": 191.46450670176955,
+          "vs_maxclock_pct": 23.333305807349753
+        },
+        {
+          "slo_frac": 0.8,
+          "slo_tok_s": 21.389736,
+          "freq_mhz": 1500,
+          "energy_mJ": 191.46450670176955,
+          "vs_maxclock_pct": 23.333305807349753
+        },
+        {
+          "slo_frac": 0.9,
+          "slo_tok_s": 24.063453,
+          "freq_mhz": 1800,
+          "energy_mJ": 201.5740523269038,
+          "vs_maxclock_pct": 19.285216392656952
+        },
+        {
+          "slo_frac": 0.95,
+          "slo_tok_s": 25.400311499999997,
+          "freq_mhz": 2100,
+          "energy_mJ": 233.41590187272436,
+          "vs_maxclock_pct": 6.535023765778594
+        },
+        {
+          "slo_frac": 1.0,
+          "slo_tok_s": 26.73717,
+          "freq_mhz": 2400,
+          "energy_mJ": 249.73622342532744,
+          "vs_maxclock_pct": 0.0
+        }
+      ],
+      "energy_opt_freq_mhz": 1500
+    },
+    "llama1b-q4km": {
+      "ts_max": 10.936827,
+      "e_maxclock_mJ": 423.1234180669329,
+      "rows": [
+        {
+          "slo_frac": 0.7,
+          "slo_tok_s": 7.655778899999999,
+          "freq_mhz": 1500,
+          "energy_mJ": 370.4309975310643,
+          "vs_maxclock_pct": 12.45320355384663
+        },
+        {
+          "slo_frac": 0.8,
+          "slo_tok_s": 8.7494616,
+          "freq_mhz": 1500,
+          "energy_mJ": 370.4309975310643,
+          "vs_maxclock_pct": 12.45320355384663
+        },
+        {
+          "slo_frac": 0.9,
+          "slo_tok_s": 9.843144299999999,
+          "freq_mhz": 1500,
+          "energy_mJ": 370.4309975310643,
+          "vs_maxclock_pct": 12.45320355384663
+        },
+        {
+          "slo_frac": 0.95,
+          "slo_tok_s": 10.389985649999998,
+          "freq_mhz": 1800,
+          "energy_mJ": 374.24309865919855,
+          "vs_maxclock_pct": 11.5522604801803
+        },
+        {
+          "slo_frac": 1.0,
+          "slo_tok_s": 10.936827,
+          "freq_mhz": 1800,
+          "energy_mJ": 374.24309865919855,
+          "vs_maxclock_pct": 11.5522604801803
+        }
+      ],
+      "energy_opt_freq_mhz": 1500
+    }
+  }
+}

@@ -1,0 +1,5 @@
+[roofline] BW_eff=11.34 GB/s = 81% of 13.98 GB/s peak; decode_ts = 11.34e9 / model_bytes ; R^2=0.994
+[roofline] per-model peak BW utilization: 80%..86%
+[quant] decode 19.1..31.1 tok/s across 339..531 MB (Q2..Q8); speedup Q8->Q2 = 1.63x
+[policy qwen0.5b-q4km] energy-opt freq=1500MHz; up to 23% energy saved at relaxed SLO vs max-clock
+[policy llama1b-q4km] energy-opt freq=1500MHz; up to 12% energy saved at relaxed SLO vs max-clock

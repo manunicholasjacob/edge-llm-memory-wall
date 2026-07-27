@@ -1,0 +1,21 @@
+% defs.tex — data-driven macros, filled from final measurements.
+\newcommand{\DECBWLO}{80}
+\newcommand{\DECBWHI}{86}
+\newcommand{\PPTGRATIO}{3--5}
+\newcommand{\ROOFR}{0.994}
+\newcommand{\QUANTPARA}{rises from \SI{19.1}{tok/s} (Q8\_0, \SI{531}{MB}) to \SI{31.1}{tok/s}
+(Q2\_K, \SI{339}{MB}), a \SI{1.6}{\times} speedup that tracks the inverse of model size}
+\newcommand{\ENERGYPARA}{Energy per token grows with model size---\SI{253}{}, \SI{453}{}, and
+\SI{576}{mJ} for the 0.5, 1, and 1.5\,B models at Q4\_K\_M---and falls with fewer bits
+(\SI{208}{mJ} at Q2\_K vs.\ \SI{297}{mJ} at Q8\_0 for the 0.5\,B model), again because decode
+moves fewer bytes.}
+\newcommand{\DVFSPARA}{Raising the clock from 1.5 to \SI{2.4}{GHz} lifts decode throughput by only
+${\sim}18\%$ while energy per token rises ${\sim}31\%$; the energy-optimal decode clock is the
+\SI{1.5}{GHz} minimum, saving ${\sim}24\%$ energy versus running at maximum.}
+\newcommand{\CAPPARA}{the 0.5\,B model reaches a 16\,K-token context on 2\,GB, while the 1 and
+1.5\,B models hit the wall by 4--8\,K tokens as weights plus KV cache approach the memory limit;
+prefill throughput also declines with context (e.g., \SIrange{57}{44}{tok/s} for the 1.5\,B model
+from 0.5\,K to 4\,K) as attention cost grows.}
+\newcommand{\POLICYPARA}{saves up to \SI{23}{\percent} energy per token for the 0.5\,B model (and
+\SI{12}{\percent} for the 1\,B model) versus always running at maximum clock, at no throughput
+cost when the SLO is met.}

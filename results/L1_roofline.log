@@ -1,0 +1,14 @@
+pinned [2400000, 2400000, 2400000, 2400000]
+[qwen0.5b-q4km 398MB t=1] prefill=23.5 decode=16.90 tok/s BW=6.72 GB/s (48% peak)
+[qwen0.5b-q4km 398MB t=2] prefill=46.5 decode=25.81 tok/s BW=10.27 GB/s (73% peak)
+[qwen0.5b-q4km 398MB t=3] prefill=68.0 decode=28.05 tok/s BW=11.16 GB/s (80% peak)
+[qwen0.5b-q4km 398MB t=4] prefill=89.3 decode=26.84 tok/s BW=10.68 GB/s (76% peak)
+[llama1b-q4km 808MB t=1] prefill=22.3 decode=10.25 tok/s BW=8.28 GB/s (59% peak)
+[llama1b-q4km 808MB t=2] prefill=43.5 decode=14.41 tok/s BW=11.64 GB/s (83% peak)
+[llama1b-q4km 808MB t=3] prefill=61.4 decode=12.82 tok/s BW=10.35 GB/s (74% peak)
+[llama1b-q4km 808MB t=4] prefill=61.7 decode=11.40 tok/s BW=9.21 GB/s (66% peak)
+[qwen1.5b-q4km 986MB t=1] prefill=16.5 decode=8.67 tok/s BW=8.55 GB/s (61% peak)
+[qwen1.5b-q4km 986MB t=2] prefill=31.4 decode=12.20 tok/s BW=12.03 GB/s (86% peak)
+[qwen1.5b-q4km 986MB t=3] prefill=45.8 decode=11.24 tok/s BW=11.08 GB/s (79% peak)
+[qwen1.5b-q4km 986MB t=4] prefill=55.3 decode=10.34 tok/s BW=10.19 GB/s (73% peak)
+DONE L1

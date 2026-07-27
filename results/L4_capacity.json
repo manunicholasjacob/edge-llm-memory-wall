@@ -1,0 +1,143 @@
+{
+  "models": {
+    "qwen0.5b-q4km": {
+      "file_mb": 397.808192,
+      "curve": [
+        {
+          "ctx": 512,
+          "pp_ts": 89.379406,
+          "min_avail_mb": 1191,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 412.808192
+        },
+        {
+          "ctx": 1024,
+          "pp_ts": 86.072118,
+          "min_avail_mb": 1179,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 427.808192
+        },
+        {
+          "ctx": 2048,
+          "pp_ts": 79.993077,
+          "min_avail_mb": 1171,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 457.808192
+        },
+        {
+          "ctx": 4096,
+          "pp_ts": 70.145245,
+          "min_avail_mb": 1152,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 517.808192
+        },
+        {
+          "ctx": 8192,
+          "pp_ts": 56.25185,
+          "min_avail_mb": 1046,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 637.808192
+        },
+        {
+          "ctx": 16384,
+          "pp_ts": 39.713952,
+          "min_avail_mb": 948,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 877.808192
+        }
+      ]
+    },
+    "llama1b-q4km": {
+      "file_mb": 807.694464,
+      "curve": [
+        {
+          "ctx": 512,
+          "pp_ts": 73.52782,
+          "min_avail_mb": 586,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 844.8944640000001
+        },
+        {
+          "ctx": 1024,
+          "pp_ts": 74.507921,
+          "min_avail_mb": 558,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 882.094464
+        },
+        {
+          "ctx": 2048,
+          "pp_ts": 68.960911,
+          "min_avail_mb": 519,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 956.4944640000001
+        },
+        {
+          "ctx": 4096,
+          "pp_ts": 57.761721,
+          "min_avail_mb": 470,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 1105.294464
+        },
+        {
+          "ctx": 8192,
+          "pp_ts": null,
+          "skipped_oom": true,
+          "est_mb": 1402.894464
+        }
+      ]
+    },
+    "qwen1.5b-q4km": {
+      "file_mb": 986.048768,
+      "curve": [
+        {
+          "ctx": 512,
+          "pp_ts": 57.145781,
+          "min_avail_mb": 438,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 1031.048768
+        },
+        {
+          "ctx": 1024,
+          "pp_ts": 54.280075,
+          "min_avail_mb": 387,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 1076.048768
+        },
+        {
+          "ctx": 2048,
+          "pp_ts": 50.559259,
+          "min_avail_mb": 345,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 1166.048768
+        },
+        {
+          "ctx": 4096,
+          "pp_ts": 44.321898,
+          "min_avail_mb": 295,
+          "swap_mb": 0,
+          "ok": true,
+          "est_mb": 1346.048768
+        },
+        {
+          "ctx": 8192,
+          "pp_ts": null,
+          "skipped_oom": true,
+          "est_mb": 1706.048768
+        }
+      ]
+    }
+  }
+}

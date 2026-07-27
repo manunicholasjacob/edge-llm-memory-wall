@@ -1,0 +1,156 @@
+\documentclass[10pt,journal,compsoc]{IEEEtran}
+% ===== The Memory Wall at the Edge of Language — IEEE Transactions on Computers =====
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{siunitx}
+\sisetup{detect-all}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newcommand{\tokps}{\text{tok/s}}
+\input{defs}
+
+\begin{document}
+\title{The Memory Wall at the Edge of Language:\\ Characterizing and Optimizing LLM Inference on a 2\,GB CPU}
+
+\author{Manu~Nicholas~Jacob% <-this % stops a space
+\IEEEcompsocitemizethanks{\IEEEcompsocthanksitem M. N. Jacob is with the Department of Electrical
+and Computer Engineering. E-mail: manunicholasjacob@gmail.com.
+\IEEEcompsocthanksitem Artifact (code, raw measurements, figures) available at the project repository.}}
+
+\markboth{IEEE Transactions on Computers (Submitted)}%
+{Jacob: The Memory Wall at the Edge of Language}
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+Large language models are moving onto edge devices, but the tools we use to reason about their
+cost were built for convolutional networks and cloud accelerators. We show that on a
+memory-constrained edge CPU the dominant phenomenon is the \emph{memory wall}, and that it governs
+LLM inference even more strictly than it governs CNNs. On a Raspberry~Pi~5 (quad-core ARM
+Cortex-A76, 2\,GB LPDDR4X) we characterize \texttt{llama.cpp} inference for models from 0.5\,B to
+1.5\,B parameters across five quantization levels, and separate the two phases of generation.
+\emph{Prefill} (prompt processing) is a compute-bound GEMM that scales with cores; \emph{decode}
+(autoregressive token generation) reads the entire model from DRAM once per token and is therefore
+bandwidth-bound. We show decode throughput is predicted by a one-line roofline,
+$\tokps \approx \mathrm{BW}/\mathrm{bytes\text{-}per\text{-}token}$: measured decode sustains
+\DECBWLO--\DECBWHI\% of the platform's peak DRAM bandwidth, barely improves with added threads or
+clock, and scales inversely with quantized model size. Using the Pi~5's on-board PMIC we measure
+the energy per token, show the DRAM rail's share rises for decode, and find---as for memory-bound
+CNNs---that the energy-optimal decode clock lies below the maximum. We map a second wall, the
+\emph{KV-cache capacity wall}: on 2\,GB the usable context length is bounded by weights plus KV
+cache, with a swap-thrash cliff beyond it. Finally we turn the characterization into a deployable
+\emph{energy-optimal configuration policy} that selects quantization, thread count, and clock to
+meet a throughput target at minimum energy per token, and demonstrate it on the device. The
+memory wall, not compute, is the organizing principle for edge LLM inference.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Large language models, edge inference, memory wall, roofline, energy efficiency, quantization,
+KV cache, ARM Cortex-A76, Raspberry Pi, llama.cpp.
+\end{IEEEkeywords}}
+
+\maketitle
+\IEEEdisplaynontitleabstractindextext
+\IEEEpeerreviewmaketitle
+
+\IEEEraisesectionheading{\section{Introduction}\label{sec:intro}}
+\IEEEPARstart{T}{he} deployment of large language models (LLMs) on edge and embedded devices---for
+privacy, latency, and offline operation---is advancing quickly, but the mental models engineers
+bring to it are largely inherited from two other worlds: convolutional-network (CNN) inference on
+mobile SoCs, and LLM serving on datacenter GPUs. Neither transfers cleanly. CNN benchmarks report
+steady-state latency of a single forward pass; datacenter LLM systems optimize batched throughput
+where the arithmetic intensity is high. An edge CPU running a single-user LLM sits in a different
+regime, and this paper characterizes it.
+
+The defining fact is the \emph{memory wall}. Autoregressive decoding generates one token at a
+time, and each token requires reading \emph{every} weight of the model from memory to compute a
+single matrix--vector product. The arithmetic intensity of decode is therefore approximately one
+multiply--accumulate per weight byte---far below the ridge point of any modern CPU---so decode is
+bandwidth-bound by construction. On a device whose DRAM delivers a few billion bytes per second,
+this sets a hard ceiling on tokens per second that no amount of compute can lift. Prefill, which
+processes many prompt tokens at once as a matrix--matrix product, is the opposite: compute-bound
+and core-scalable. A single number---model bytes moved per token---separates the two.
+
+We make this precise on a Raspberry~Pi~5 (Cortex-A76, 2\,GB), a representative edge platform, using
+\texttt{llama.cpp}~\cite{llamacpp}. Our contributions:
+\begin{itemize}
+\item \textbf{A decode roofline (\S\ref{sec:roofline}).} Across models of 0.5--1.5\,B parameters,
+decode throughput follows $\tokps\approx \mathrm{BW}_\text{eff}/\text{bytes-per-token}$, sustaining
+\DECBWLO--\DECBWHI\% of the measured peak DRAM bandwidth; prefill is \PPTGRATIO$\times$ faster and
+scales with threads while decode does not.
+\item \textbf{The energy of a token (\S\ref{sec:energy}).} Using PMIC telemetry we measure energy
+per token, show the DRAM-rail share is higher for decode than prefill, and (\S\ref{sec:dvfs}) that
+the energy-optimal decode clock is below maximum---raising the clock buys little throughput on a
+bandwidth-bound loop.
+\item \textbf{The quantization frontier (\S\ref{sec:quant}).} Because decode is bandwidth-bound,
+lower-bit quantization improves throughput and energy \emph{and} shrinks the footprint together;
+we map the speed/size(/quality) Pareto from 2 to 8 bits.
+\item \textbf{The KV-cache capacity wall (\S\ref{sec:capacity}).} On 2\,GB, usable context is
+bounded by weights plus KV cache; we chart the boundary and the swap-thrash cliff beyond it.
+\item \textbf{An energy-optimal configuration policy (\S\ref{sec:policy}).} From the measured
+constants we derive a policy that picks quantization, threads, and clock to meet a throughput SLO
+at minimum energy per token, demonstrated on the device.
+\end{itemize}
+The unifying message is that edge LLM inference should be reasoned about, and optimized, as a
+memory-bandwidth problem.
+
+\section{Background and Related Work}\label{sec:related}
+\textbf{The roofline model}~\cite{williams2009roofline} bounds performance by
+$\min(\text{compute ceiling}, \text{bandwidth}\times\text{arithmetic intensity})$. Our companion
+work applied it to CNN inference on this platform, showing mobile CNNs are memory-bound while dense
+CNNs are compute-bound~\cite{jacob2026memwall}, and characterized the steady-state energy/DVFS
+trade-off~\cite{jacob2026energy} and the cold-start transient~\cite{jacob2026coldstart}. LLM decode
+is the extreme memory-bound case: its arithmetic intensity is essentially fixed at $\approx 1$
+FLOP/byte regardless of model, so it lives permanently on the bandwidth-bound slope.
+
+\textbf{LLM inference systems.} Datacenter work identifies decode as memory-bound and batches
+requests to raise intensity~\cite{pope2023efficiently}; PagedAttention~\cite{kwon2023vllm} manages
+KV-cache memory, and FlashAttention~\cite{dao2022flashattention} is IO-aware. These target GPUs
+with abundant memory and many concurrent sequences. The single-user edge CPU cannot batch, so it
+is stuck on the bandwidth slope---which is precisely why the roofline is so predictive here.
+
+\textbf{Quantization}~\cite{dettmers2022llmint8,frantar2023gptq,lin2024awq} reduces weight
+precision; on a bandwidth-bound decode loop its speed benefit is a direct consequence of moving
+fewer bytes, which we quantify. \textbf{On-device LLMs.} MobileLLM~\cite{liu2024mobilellm} designs
+sub-billion models; \emph{LLM in a flash}~\cite{alizadeh2024llmflash} streams weights from storage
+under a memory bound; mobile evaluations~\cite{laskaridis2024mobilellm} report throughput across
+phones. We complement these with a roofline-grounded, energy-instrumented characterization on a
+constrained CPU and a deployable operating policy.
+
+\section{Experimental Setup}\label{sec:setup}
+\textbf{Platform.} Raspberry~Pi~5 (Broadcom BCM2712; quad-core Cortex-A76 up to 2.4\,GHz with the
+\texttt{asimddp} dot-product extension; 2\,GB LPDDR4X; Debian 12 / Linux 6.12). We use
+\texttt{llama.cpp}~\cite{llamacpp} built with native ARM optimizations (the CPU backend selects
+dot-product kernels at runtime). Peak DRAM read bandwidth on this platform is \SI{13.98}{GB/s} and
+the compute ceiling \SI{102.8}{GFLOP/s}, measured previously~\cite{jacob2026memwall}.
+
+\textbf{Models.} Instruction-tuned GGUF checkpoints spanning size and precision: Qwen2.5-0.5B,
+Llama-3.2-1B, and Qwen2.5-1.5B~\cite{qwen2025,llama32} at Q4\_K\_M for the size sweep, and
+Qwen2.5-0.5B at Q2\_K/Q3\_K\_M/Q4\_K\_M/Q5\_K\_M/Q8\_0 for the quantization sweep.
+
+\textbf{Measurement.} Throughput (prefill \texttt{pp} and decode \texttt{tg}) is measured with
+\texttt{llama-bench} (medians over repetitions). Energy is integrated from the on-board PMIC
+(\texttt{vcgencmd pmic\_read\_adc}, per-rail $V\!\times\!I$), isolating VDD\_CORE and the DDR rails
+as in~\cite{jacob2026energy}. Except in the DVFS study the clock is pinned to 2.4\,GHz via the
+\texttt{userspace} governor; the default thread count is four.
+
+\input{results_body}
+
+\section{Conclusion}\label{sec:conclusion}
+On a 2\,GB edge CPU, LLM inference is a memory-bandwidth problem. Decode reads the whole model per
+token and runs at a large fraction of peak DRAM bandwidth, predictable from a one-line roofline;
+prefill is compute-bound and scalable; the energy-optimal clock sits below maximum; quantization
+helps by moving fewer bytes; and a second, capacity wall bounds context length on limited RAM.
+Treating these as the organizing constraints---rather than compute---yields both accurate
+performance prediction and a simple energy-optimal operating policy. As models and runtimes evolve,
+the arithmetic intensity of single-stream decode will not: the memory wall is where edge language
+models live.
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+\end{document}

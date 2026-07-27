@@ -1,0 +1,6 @@
+[qwen0.5b-q2k] Q2_K    339MB decode=31.13 tok/s prefill=147.7 ppl=None
+[qwen0.5b-q3km] Q3_K_M  355MB decode=29.12 tok/s prefill=197.2 ppl=None
+[qwen0.5b-q4km] Q4_K_M  398MB decode=26.84 tok/s prefill=89.0 ppl=None
+[qwen0.5b-q5km] Q5_K_M  420MB decode=25.54 tok/s prefill=79.5 ppl=None
+[qwen0.5b-q8] Q8_0    531MB decode=19.09 tok/s prefill=249.3 ppl=None
+DONE L2

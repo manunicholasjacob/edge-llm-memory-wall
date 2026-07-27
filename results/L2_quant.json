@@ -1,0 +1,39 @@
+{
+  "models": {
+    "qwen0.5b-q2k": {
+      "quant": "Q2_K",
+      "file_mb": 338.60752,
+      "pp_ts": 147.728078,
+      "tg_ts": 31.129119,
+      "ppl": null
+    },
+    "qwen0.5b-q3km": {
+      "quant": "Q3_K_M",
+      "file_mb": 355.466656,
+      "pp_ts": 197.238682,
+      "tg_ts": 29.117748,
+      "ppl": null
+    },
+    "qwen0.5b-q4km": {
+      "quant": "Q4_K_M",
+      "file_mb": 397.808192,
+      "pp_ts": 89.041189,
+      "tg_ts": 26.840002,
+      "ppl": null
+    },
+    "qwen0.5b-q5km": {
+      "quant": "Q5_K_M",
+      "file_mb": 420.086336,
+      "pp_ts": 79.474478,
+      "tg_ts": 25.536121,
+      "ppl": null
+    },
+    "qwen0.5b-q8": {
+      "quant": "Q8_0",
+      "file_mb": 531.06848,
+      "pp_ts": 249.300513,
+      "tg_ts": 19.085168,
+      "ppl": null
+    }
+  }
+}
