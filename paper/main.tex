@@ -39,7 +39,10 @@ Cortex-A76, 2\,GB LPDDR4X) we characterize \texttt{llama.cpp} inference for mode
 bandwidth-bound. We show decode throughput is predicted by a one-line roofline,
 $\tokps \approx \mathrm{BW}/\mathrm{bytes\text{-}per\text{-}token}$: measured decode sustains
 \DECBWLO--\DECBWHI\% of the platform's peak DRAM bandwidth, barely improves with added threads or
-clock, and scales inversely with quantized model size. Using the Pi~5's on-board PMIC we measure
+clock, and scales inversely with quantized model size. Repeating the roofline on a second,
+completely different architecture---an x86 CPU with $3\times$ the memory bandwidth---yields the
+same law with the same goodness of fit ($R^2=0.98$ on both): the roofline is platform-independent,
+and only its bandwidth constant changes. Using the Pi~5's on-board PMIC we measure
 the energy per token, show the DRAM rail's share rises for decode, and find---as for memory-bound
 CNNs---that the energy-optimal decode clock lies below the maximum. We map a second wall, the
 \emph{KV-cache capacity wall}: on 2\,GB the usable context length is bounded by weights plus KV
@@ -79,10 +82,12 @@ and core-scalable. A single number---model bytes moved per token---separates the
 We make this precise on a Raspberry~Pi~5 (Cortex-A76, 2\,GB), a representative edge platform, using
 \texttt{llama.cpp}~\cite{llamacpp}. Our contributions:
 \begin{itemize}
-\item \textbf{A decode roofline (\S\ref{sec:roofline}).} Across models of 0.5--1.5\,B parameters,
-decode throughput follows $\tokps\approx \mathrm{BW}_\text{eff}/\text{bytes-per-token}$, sustaining
-\DECBWLO--\DECBWHI\% of the measured peak DRAM bandwidth; prefill is \PPTGRATIO$\times$ faster and
-scales with threads while decode does not.
+\item \textbf{A decode roofline (\S\ref{sec:roofline}), validated across architectures.} Across
+models spanning parameter size and quantization, decode throughput follows
+$\tokps\approx \mathrm{BW}_\text{eff}/\text{bytes-per-token}$, sustaining \DECBWLO--\DECBWHI\% of
+the measured peak DRAM bandwidth; prefill is \PPTGRATIO$\times$ faster and scales with threads
+while decode does not. The same law holds, with the same fit, on an x86 CPU with $3\times$ the
+bandwidth (\S\ref{sec:crossplatform})---the roofline is platform-independent.
 \item \textbf{The energy of a token (\S\ref{sec:energy}).} Using PMIC telemetry we measure energy
 per token, show the DRAM-rail share is higher for decode than prefill, and (\S\ref{sec:dvfs}) that
 the energy-optimal decode clock is below maximum---raising the clock buys little throughput on a
@@ -127,7 +132,10 @@ constrained CPU and a deployable operating policy.
 \texttt{asimddp} dot-product extension; 2\,GB LPDDR4X; Debian 12 / Linux 6.12). We use
 \texttt{llama.cpp}~\cite{llamacpp} built with native ARM optimizations (the CPU backend selects
 dot-product kernels at runtime). Peak DRAM read bandwidth on this platform is \SI{13.98}{GB/s} and
-the compute ceiling \SI{102.8}{GFLOP/s}, measured previously~\cite{jacob2026memwall}.
+the compute ceiling \SI{102.8}{GFLOP/s}, measured previously~\cite{jacob2026memwall}. For the
+cross-platform check (\S\ref{sec:crossplatform}) we additionally use an x86 Intel Core~i7-12700H
+(6P$+$8E cores, 32\,GB DDR5-4800 dual-channel), whose achievable read bandwidth we measure at
+\SI{42}{GB/s} with the same multithreaded streaming benchmark.
 
 \textbf{Models.} Instruction-tuned GGUF checkpoints spanning size and precision: Qwen2.5-0.5B,
 Llama-3.2-1B, and Qwen2.5-1.5B~\cite{qwen2025,llama32} at Q4\_K\_M for the size sweep, and

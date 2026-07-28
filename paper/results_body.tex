@@ -35,6 +35,30 @@ phases occupy opposite ends of the roofline.
 \label{fig:threads}
 \end{figure}
 
+\subsection{The Roofline Is Platform-Independent}\label{sec:crossplatform}
+To test whether these results are specific to the Raspberry Pi, we repeated the roofline on a
+completely different architecture: an x86 Intel Core~i7-12700H (Alder Lake, 6 performance $+$ 8
+efficiency cores, DDR5-4800 dual-channel), whose measured read bandwidth is
+\SI{42}{GB/s}---about \CROSSBWX$\times$ the Pi's. We ran the same models plus larger ones (up to
+7\,B parameters, which the x86's memory can hold) with \texttt{llama.cpp}'s CPU backend.
+Figure~\ref{fig:crossplatform} shows the outcome: on \emph{both} platforms decode follows
+$\tokps=\mathrm{BW}_\text{eff}/\text{bytes}$ with the \emph{same} goodness of fit
+($R^2=\CROSSRPI$ on Arm, $R^2=\CROSSRX$ on x86), and each sustains a high fraction of its own DRAM
+bandwidth (\CROSSUTILPI\% and \CROSSUTILX\%). The two roofline slopes differ only by the bandwidth
+ratio: the x86's effective decode bandwidth is \CROSSBWEFFX\ versus the Pi's \CROSSBWEFFPI, a
+factor of \CROSSRATIO$\times$ that tracks the \CROSSBWX$\times$ difference in raw DRAM bandwidth.
+The memory wall governs edge LLM decode regardless of ISA or microarchitecture; only the constant
+changes, and that constant is memory bandwidth.
+
+\begin{figure}[t]\centering
+\includegraphics[width=\columnwidth]{figs/fig9_crossplatform.png}
+\caption{The decode roofline is platform-independent. On both an Arm Cortex-A76 (Pi~5) and an x86
+i7-12700H---architectures with $3\times$ different memory bandwidth---decode obeys
+$\tokps=\mathrm{BW}_\text{eff}/\text{bytes}$ with identical fit ($R^2=0.98$); the two lines differ
+only by the bandwidth ratio. Log--log axes.}
+\label{fig:crossplatform}
+\end{figure}
+
 \section{The Quantization Frontier}\label{sec:quant}
 Because decode is bandwidth-bound, reducing weight precision has a direct and predictable payoff:
 fewer bytes per token means proportionally faster decode, and simultaneously a smaller footprint
@@ -140,13 +164,12 @@ decode clock is the minimum, and the on-demand governor's default of racing to m
 for negligible throughput. (iv) \emph{Budget the two walls together}: bandwidth sets speed, capacity
 sets reachable context, and quantization is the single knob that relaxes both.
 
-\textbf{Threats to validity.} Our results are specific to \texttt{llama.cpp}'s CPU backend on one
-Cortex-A76 platform with LPDDR4X. The absolute bandwidth and the ridge point differ across devices,
-but the \emph{structure}---compute-bound prefill, bandwidth-bound decode, a size-predicted decode
-roofline, a sub-maximal energy-optimal clock, and a capacity wall---follows from the arithmetic
-intensity of autoregressive decode and should transfer to other CPU edge platforms; a
-faster-memory or accelerator part would raise absolute throughput but leave single-stream decode
-bandwidth-bound. We study models up to 1.5\,B parameters because larger models do not fit the 2\,GB
+\textbf{Threats to validity.} Our energy, capacity, and DVFS results use \texttt{llama.cpp}'s CPU
+backend and the Pi~5's PMIC, so their absolute values are platform-specific. The central
+result---the decode roofline---is \emph{not}: \S\ref{sec:crossplatform} reproduces it on an x86
+CPU with $3\times$ the bandwidth, and it follows from the fixed arithmetic intensity of
+single-stream decode, so it should transfer to any CPU edge platform. A faster-memory or
+accelerator part would raise absolute throughput but leave single-stream decode bandwidth-bound. We study models up to 1.5\,B parameters because larger models do not fit the 2\,GB
 budget at usable context; the roofline extrapolates to them but we do not measure them here. The
 PMIC samples at ${\sim}\SI{10}{Hz}$, so we measure throughput unperturbed and pool power over the
 steady decode phase rather than integrating a single short window. Finally, we quantify throughput,
