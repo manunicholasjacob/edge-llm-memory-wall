@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below."
+title: "The Memory Wall at the Edge of Language: Characterizing and Optimizing LLM Inference on a 2 GB ARM CPU"
+authors:
+  - family-names: "Jacob"
+    given-names: "Manu Nicholas"
+    orcid: "https://orcid.org/0009-0007-6589-6572"
+type: software
+repository-code: "https://github.com/manunicholasjacob/edge-llm-memory-wall"
+url: "http://manunicholasjacob.com/"
+version: "1.0.1"
+date-released: "2026-08-07"
