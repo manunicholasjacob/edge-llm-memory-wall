@@ -1,0 +1,30 @@
+{
+  "title": "The Memory Wall at the Edge of Language: Characterizing and Optimizing LLM Inference on a 2 GB ARM CPU",
+  "upload_type": "software",
+  "license": "mit",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Jacob, Manu Nicholas",
+      "orcid": "0009-0007-6589-6572"
+    }
+  ],
+  "keywords": [
+    "edge inference",
+    "large language models",
+    "llama.cpp",
+    "memory bandwidth",
+    "roofline model",
+    "quantization",
+    "Raspberry Pi 5",
+    "Arm Cortex-A76"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/manunicholasjacob/edge-llm-memory-wall",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}

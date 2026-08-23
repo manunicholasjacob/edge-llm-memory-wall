@@ -1,5 +1,7 @@
 # The Memory Wall at the Edge of Language — LLM Inference on a 2 GB CPU
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21844855.svg)](https://doi.org/10.5281/zenodo.21844855)
+
 Artifact for the paper **"The Memory Wall at the Edge of Language: Characterizing and Optimizing
 LLM Inference on a 2 GB CPU"** (targeting *IEEE Transactions on Computers*).
 
@@ -55,3 +57,10 @@ measured in the companion memory-wall study. Energy via `vcgencmd pmic_read_adc`
 Manu Nicholas Jacob. Part of an edge-AI measurement portfolio on the Pi 5; extends the
 memory-wall roofline from CNNs (*The Memory Wall Governs Edge DNN Inference*) to generative LLM
 inference, with companion energy and cold-start studies.
+
+## Archived version
+
+This artifact is archived on Zenodo. The concept DOI
+[10.5281/zenodo.21844855](https://doi.org/10.5281/zenodo.21844855)
+always resolves to the latest release, and `CITATION.cff` carries the full metadata,
+which is what GitHub's "Cite this repository" button renders.
