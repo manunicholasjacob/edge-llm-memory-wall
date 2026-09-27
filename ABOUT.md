@@ -1,8 +1,11 @@
 # Paper 12 — The Memory Wall at the Edge of Language
 
-**Title:** The Memory Wall at the Edge of Language: Characterizing and Optimizing LLM Inference on a 2 GB CPU
+**Original title:** The Memory Wall at the Edge of Language: Characterizing and Optimizing LLM Inference on a 2 GB CPU
 **Author:** Manu Nicholas Jacob
-**Target venue:** IEEE Transactions on Computers (IEEEtran compsoc); alternatives: IEEE CAL / ACM TACO / IoT-J
+**Current title:** One Law, Two Memory Systems: A Transferable Decode Roofline for Edge LLM Inference
+**Venue:** under review at the IEEE Internet of Things Journal, `IoT-75150-2026`, submitted 22 September 2026.
+Previously `TC-2026-08-0905` at IEEE Transactions on Computers, rejected 8 September 2026; TC bars
+resubmission there, including of modified versions.
 **Platform:** Raspberry Pi 5 (quad-core ARM Cortex-A76, 2 GB LPDDR4X), llama.cpp CPU backend
 **Public artifact:** https://github.com/manunicholasjacob/edge-llm-memory-wall
 

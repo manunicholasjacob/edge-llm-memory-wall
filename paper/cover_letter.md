@@ -1,3 +1,10 @@
+> **Historical record, not current.** This is the cover letter sent to IEEE Transactions on
+> Computers with `TC-2026-08-0905` in August 2026. TC rejected the manuscript on 8 September
+> 2026 and bars resubmission there. The work is now under review at the IEEE Internet of
+> Things Journal as `IoT-75150-2026` under the title "One Law, Two Memory Systems: A
+> Transferable Decode Roofline for Edge LLM Inference". The letter is kept unaltered because
+> it is the record of what was sent.
+
 # Cover Letter — IEEE Transactions on Computers
 
 **Manuscript:** *The Memory Wall at the Edge of Language: Characterizing and Optimizing LLM Inference on a 2 GB CPU*
