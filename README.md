@@ -71,6 +71,10 @@ On a Raspberry Pi 5 with `llama.cpp` (built `-DGGML_NATIVE=ON`; the CPU backend 
 then pull `results/*.json` and run `analysis.py` and `fig_gen.py` locally. `sudo` is needed for
 `drop_caches` and DVFS; the scripts pin the clock and control the governor.
 
+The headline numbers in Findings 1, 3, 4 and 8 can be checked without a Pi: `python scripts/analysis.py`
+then `python scripts/check_headlines.py` recomputes them from `results/` and exits non-zero on drift.
+The `reproduce` workflow runs both on every push.
+
 ## Platform
 
 Raspberry Pi 5 (Broadcom BCM2712, quad-core Cortex-A76 @ up to 2.4 GHz, 2 GB LPDDR4X), Debian 12 /
