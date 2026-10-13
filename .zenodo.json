@@ -1,5 +1,6 @@
 {
   "title": "The Memory Wall at the Edge of Language: Characterizing and Optimizing LLM Inference on a 2 GB ARM CPU",
+  "description": "Artifact for the manuscript One Law, Two Memory Systems: A Transferable Decode Roofline for Edge LLM Inference (under review). llama.cpp decode and prefill measurements on a 2 GB Raspberry Pi 5 (Arm Cortex-A76): decode roofline fits, PMIC energy per token, the KV-cache capacity limit and an energy-aware runtime policy, with the scripts that regenerate every figure. The repository keeps its original title and DOI, which were minted for the artifact rather than for the paper.",
   "upload_type": "software",
   "license": "mit",
   "access_right": "open",

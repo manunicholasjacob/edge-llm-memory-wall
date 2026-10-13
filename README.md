@@ -1,4 +1,4 @@
-# The Memory Wall at the Edge of Language — LLM Inference on a 2 GB CPU
+# The Memory Wall at the Edge of Language: LLM Inference on a 2 GB CPU
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21844855.svg)](https://doi.org/10.5281/zenodo.21844855)
 
@@ -21,7 +21,7 @@ against the paper, so `CITATION.cff` and the Zenodo record are unchanged.
 
 LLMs are moving onto edge devices, but the tools we use to reason about their cost were built for
 CNNs and datacenter GPUs. This work shows that on a memory-constrained edge CPU the **memory wall**
-is the organizing principle — and it governs LLM inference *even more strictly* than it governs
+is the organizing principle, and it governs LLM inference *even more strictly* than it governs
 CNNs. All measurements are on a **Raspberry Pi 5** (quad-core ARM Cortex-A76, **2 GB** LPDDR4X)
 running `llama.cpp`.
 
@@ -29,11 +29,11 @@ running `llama.cpp`.
 
 | # | Finding |
 |---|---------|
-| 1 | **Decode is bandwidth-bound**: throughput ≈ effective bandwidth ÷ model_bytes. The size sweep fits at **R² = 0.994** and all seven measured configurations at **R² = 0.98**; decode sustains **73–86% of peak DRAM bandwidth**. |
-| 2 | **Prefill scales ~4× with cores; decode saturates at 2–3 threads** — opposite ends of the roofline (prefill is 3–5× faster). |
-| 3 | **Quantization is the master lever**: Q2→Q8 spans 31→19 tok/s and 339→531 MB — fewer bits = faster decode *and* smaller footprint together. |
-| 4 | **Energy per token** scales with model size (253/453/576 mJ for 0.5/1/1.5 B) and falls with fewer bits; the **DRAM rail is only 4–5% of power** — the memory-wall energy is *core stalls*, not DRAM-interface power. |
-| 5 | **KV-cache capacity wall**: on 2 GB the 0.5 B model reaches 16 K context, 1 B/1.5 B hit the wall by 4–8 K — model size trades against context length. |
+| 1 | **Decode is bandwidth-bound**: throughput ≈ effective bandwidth ÷ model_bytes. The size sweep fits at **R² = 0.994** and all seven measured configurations at **R² = 0.98**; decode sustains **73 to 86% of peak DRAM bandwidth**. |
+| 2 | **Prefill scales ~4× with cores; decode saturates at 2 to 3 threads**: opposite ends of the roofline (prefill is 3 to 5× faster). |
+| 3 | **Quantization is the master lever**: Q2 to Q8 spans 31 to 19 tok/s and 339 to 531 MB, so fewer bits = faster decode *and* smaller footprint together. |
+| 4 | **Energy per token** scales with model size (253/453/576 mJ for 0.5/1/1.5 B) and falls with fewer bits; the **DRAM rail is only 4 to 5% of power**: the memory-wall energy is *core stalls*, not DRAM-interface power. |
+| 5 | **KV-cache capacity wall**: on 2 GB the 0.5 B model reaches 16 K context, 1 B/1.5 B hit the wall by 4 to 8 K, so model size trades against context length. |
 | 6 | **Energy-optimal decode clock = 1.5 GHz (minimum)**: max-clock costs ~24% more energy for ~18% throughput. |
 | 7 | **Energy-optimal configuration policy** (quant/threads/clock for a throughput SLO) saves up to **23% energy/token** vs always-max-clock, at no throughput cost. |
 | 8 | **The law transfers between CPUs**: an x86 part with 3.3× the bandwidth fits the same one-line roofline, R² = 0.98 on both, with only the constant changing (10.7 GB/s effective on the Pi against 35.7 GB/s on x86). |
@@ -46,11 +46,7 @@ configurations, three parameter sizes at Q4_K_M plus five quantizations of the 0
 reports 73 to 86%. The numbers above are the manuscript's.
 
 **"Transfers between CPUs" is not "platform-independent."** Finding 8 is measured on two CPUs and
-it holds on both. It is not a claim about all hardware. Separate work by the same author, across
-six memory systems from 17 to 1555 GB/s, finds that the through-origin form of this law describes
-a regime rather than a machine: it fits well wherever every model tested is larger than the point
-at which fixed per-token cost equals memory time, and degrades badly where it is not. Read
-Finding 8 as a CPU result.
+it holds on both. It is not a claim about all hardware. Read Finding 8 as a CPU result.
 
 ## Repository layout
 
