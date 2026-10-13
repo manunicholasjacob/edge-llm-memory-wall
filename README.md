@@ -89,3 +89,7 @@ This artifact is archived on Zenodo. The concept DOI
 [10.5281/zenodo.21844855](https://doi.org/10.5281/zenodo.21844855)
 always resolves to the latest release, and `CITATION.cff` carries the full metadata,
 which is what GitHub's "Cite this repository" button renders.
+
+## License
+
+MIT. See `LICENSE`.
