@@ -18,6 +18,10 @@ Peak DRAM read 13.98 GB/s (from the memory-wall study). Clock pinned 2.4 GHz exc
   energy/token, so max-clock wastes ~24% energy.
 - **Analysis.** Size-only decode roofline (R²=0.994); energy-optimal clock/config policy (up to 23%
   energy saved at a throughput SLO, 0.5 B).
+- **Correction (13 Oct 2026).** The L5 energy figures above ("energy-optimal 1.5 GHz", +31% energy/token,
+  ~24% wasted, up to 23% saved) use PMIC power read at 1500 MHz, which a later control experiment in the
+  companion energy study found unreliable at that clock. They are withdrawn; the +18% tok/s lift (timing)
+  stands. The L1 line's 11.34 GB/s / 80 to 86% is the superseded three-size fit; see README Finding 1.
 
 ## TC expansion (2026-07-27)
 - **Roofline strengthened to 7 points**: the 3-size sweep PLUS the 5 quantized 0.5B models all
