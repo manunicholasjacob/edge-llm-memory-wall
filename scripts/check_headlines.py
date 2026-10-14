@@ -55,6 +55,14 @@ shares = [100 * v["P_ddr_W"] / v["P_decode_W"] for v in m3.values()]
 check("F4 DRAM rail share low %", min(shares), 4, 0)
 check("F4 DRAM rail share high %", max(shares), 5, 0)
 
+# Finding 6: decode throughput lift from 1.5 to 2.4 GHz on the 0.5 B model. Timing only: the 1500 MHz
+# PMIC power readings are withdrawn, so no energy number is checked or published for this finding.
+f5 = load("L5_dvfs.json")["models"]["qwen0.5b-q4km"]["freqs"]
+lo, hi = f5["1500000"]["decode_ts"], f5["2400000"]["decode_ts"]
+check("F6 decode tok/s at 1.5 GHz", lo, 22.67, 2)
+check("F6 decode tok/s at 2.4 GHz", hi, 26.74, 2)
+check("F6 decode lift 1.5 to 2.4 GHz %", 100 * (hi / lo - 1), 18, 0)
+
 # Finding 8: the same one-line roofline on the x86 laptop CPU.
 pc = load("pc_roofline.json")
 pc_pts = [(v["file_mb"] / 1000, v["decode_ts"]) for v in pc["models"].values()]

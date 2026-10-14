@@ -34,11 +34,22 @@ running `llama.cpp`.
 | 3 | **Quantization is the master lever**: Q2 to Q8 spans 31 to 19 tok/s and 339 to 531 MB, so fewer bits = faster decode *and* smaller footprint together. |
 | 4 | **Energy per token** scales with model size (253/453/576 mJ for 0.5/1/1.5 B) and falls with fewer bits; the **DRAM rail is only 4 to 5% of power**: the memory-wall energy is *core stalls*, not DRAM-interface power. |
 | 5 | **KV-cache capacity wall**: on 2 GB the 0.5 B model reaches 16 K context, 1 B/1.5 B hit the wall by 4 to 8 K, so model size trades against context length. |
-| 6 | **Energy-optimal decode clock = 1.5 GHz (minimum)**: max-clock costs ~24% more energy for ~18% throughput. |
-| 7 | **Energy-optimal configuration policy** (quant/threads/clock for a throughput SLO) saves up to **23% energy/token** vs always-max-clock, at no throughput cost. |
+| 6 | **Maximum clock buys little decode throughput**: raising the clock from 1.5 to 2.4 GHz lifts 0.5 B decode by ~18% (22.67 to 26.74 tok/s, from timing alone). No energy figure is given for 1.5 GHz: a later control experiment on the same board found the power monitor unreliable at that clock (see the correction below). |
+| 7 | **Configuration policy** (quant/threads/clock for a throughput SLO): run at the lowest clock that meets the throughput target. The energy it saves must be measured with a power monitor validated at low clocks; no saving is claimed here. |
 | 8 | **The law transfers between CPUs**: an x86 part with 3.3× the bandwidth fits the same one-line roofline, R² = 0.98 on both, with only the constant changing (10.7 GB/s effective on the Pi against 35.7 GB/s on x86). |
 
-### Two corrections to earlier versions of this table
+### Three corrections to earlier versions of this table
+
+**The 1.5 GHz energy figures are withdrawn (13 October 2026).** Earlier versions of Findings 6
+and 7 said 1.5 GHz was the energy-optimal decode clock, that maximum clock cost ~24% more energy,
+and that the policy saved up to 23% energy per token (12% for the 1 B model). Every one of those
+figures uses PMIC power read at 1500 MHz. A later control experiment on the same board, in the
+companion energy study, found that at 1500 MHz the PMIC reading did not track the work done when
+busy cores were added, so all 1500 MHz power quantities were withdrawn there and these go with
+them. The decode throughput numbers come from timing, not the power monitor, and stand. The raw
+readings stay in `results/L5_dvfs.json` and `results/STATS.txt` as measured. The manuscript files
+in `paper/` are the submitted version and stay unchanged while it is under review; the correction
+will be made at revision.
 
 **The bandwidth figures changed when the fit did.** An earlier README quoted 11.34 GB/s and a
 80 to 86% band. Those came from the three-model size sweep. The manuscript now fits seven
@@ -57,8 +68,8 @@ scripts/
   L2_quant.py       quantization frontier (Q2..Q8)
   L3_energy.py      energy per token (PMIC)
   L4_capacity.py    KV-cache capacity wall
-  L5_dvfs.py        energy-optimal decode frequency
-  analysis.py       roofline predictive model + energy-optimal policy
+  L5_dvfs.py        decode clock sweep (throughput + PMIC power; 1500 MHz power withdrawn)
+  analysis.py       roofline predictive model + clock policy
   fig_gen.py        regenerates all figures
 results/            raw measurement JSONs + STATS.txt
 paper/              LaTeX (IEEEtran compsoc), refs.bib, compiled PDF, cover letter
@@ -71,7 +82,7 @@ On a Raspberry Pi 5 with `llama.cpp` (built `-DGGML_NATIVE=ON`; the CPU backend 
 then pull `results/*.json` and run `analysis.py` and `fig_gen.py` locally. `sudo` is needed for
 `drop_caches` and DVFS; the scripts pin the clock and control the governor.
 
-The headline numbers in Findings 1, 3, 4 and 8 can be checked without a Pi: `python scripts/analysis.py`
+The headline numbers in Findings 1, 3, 4, 6 and 8 can be checked without a Pi: `python scripts/analysis.py`
 then `python scripts/check_headlines.py` recomputes them from `results/` and exits non-zero on drift.
 The `reproduce` workflow runs both on every push.
 
